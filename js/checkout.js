@@ -207,7 +207,6 @@ function showSuccess(input, errorElement) {
   errorElement.style.display = "none";
 }
 
-// Thiết lập form checkout
 function setupCheckoutForm() {
   const form = document.getElementById("checkoutForm");
   form.addEventListener("submit", function (event) {
@@ -219,21 +218,17 @@ function setupCheckoutForm() {
     const phone = document.getElementById("phone").value;
     const address = document.getElementById("address").value;
 
-    // Kiểm tra xem có phải đang trong quá trình mua ngay không
     const urlParams = new URLSearchParams(window.location.search);
     const isBuyNow = urlParams.get("buyNow") === "true";
 
     let orderItems;
     if (isBuyNow) {
-      // Nếu là mua ngay, lấy thông tin từ buyNowItem
       const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
       orderItems = buyNowItem ? [buyNowItem] : [];
     } else {
-      // Nếu không, lấy thông tin từ giỏ hàng
       orderItems = JSON.parse(localStorage.getItem("cart")) || [];
     }
 
-    // Tạo đối tượng đơn hàng
     const order = {
       customerInfo: { name, email, phone, address },
       items: orderItems,
@@ -244,18 +239,21 @@ function setupCheckoutForm() {
       date: new Date().toISOString(),
     };
 
-    // Trong thực tế, bạn sẽ gửi đơn hàng này đến server
     console.log("Đơn hàng đã được đặt:", order);
 
-    // Xóa buyNowItem sau khi đặt hàng thành công
+    // Xóa dữ liệu sau khi đặt hàng thành công
     if (isBuyNow) {
       localStorage.removeItem("buyNowItem");
+    } else {
+      // Xóa giỏ hàng
+      localStorage.removeItem("cart");
+      // Reset biến cart
+      cart = [];
+      // Cập nhật hiển thị
+      updateCartDisplay();
     }
 
-    // Hiển thị thông báo đặt hàng thành công
     alert("Đặt hàng thành công! Cảm ơn bạn đã mua hàng.");
-
-    // Chuyển hướng về trang chủ hoặc trang xác nhận đơn hàng
     window.location.href = "index.html";
   });
 }
